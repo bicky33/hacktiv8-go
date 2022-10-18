@@ -25,12 +25,12 @@ func GenerateRandomNumber() int {
 
 func main() {
 	rand.Seed(time.Now().Unix())
-	// go func() {
-	// 	tick := time.Tick(time.Second * 1)
-	// 	for range tick {
-	// 		StatusWrite()
-	// 	}
-	// }()
+	go func() {
+		tick := time.Tick(time.Second * 15)
+		for range tick {
+			StatusWrite()
+		}
+	}()
 
 	server := http.Server{
 		Addr: ":8080",

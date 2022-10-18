@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Status</title>
+</head>
+<body>
+    <div class="container">
+        <div class="card wind">
+            <img src="./assets/wind-icon.svg">
+            <div class="name">Wind</div>
+            <div class="value"></div>
+            <div class="status"></div>
+        </div>
+        <div class="card water">
+            <img src="./assets/water-drop-teardrop-icon.svg" height="112pt">
+            <div class="name">Water</div>
+            <div class="value"></div>
+            <div class="status"></div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    const url = "../file/status.json";
+    function ChangeValueWind(data){
+        let wind = document.querySelector(".wind")
+        let value = wind.querySelector(".value")
+        let status = wind.querySelector(".status")
+        value.innerHTML = data +" m/s"
+        if(data < 6){
+            status.innerHTML = "aman"
+            return
+        }
+        if (data > 7 && data <= 15) {
+            status.innerHTML = "siaga"
+            return
+        }
+        if(data > 15){
+            status.innerHTML = "bahaya"
+            return
+        }
+    }
+    function ChangeValueWater(data){
+        let water = document.querySelector(".water")
+        let value = water.querySelector(".value")
+        let status = water.querySelector(".status")
+        value.innerHTML = data +" m/s"
+        if(data < 5){
+            status.innerHTML = "aman"
+            return
+        }
+        if (data > 6 && data <= 8) {
+            status.innerHTML = "siaga"
+            return
+        }
+        if(data > 8){
+            status.innerHTML = "bahaya"
+            return
+        }
+    }
+    const fetchJson = async () => {
+        try {
+            const data = await fetch(url);
+            const response = await data.json(); 
+            ChangeValueWind(response.status.wind);
+            ChangeValueWater(response.status.water);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    fetchJson();
+</script>

@@ -3,7 +3,6 @@ package config
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -12,11 +11,10 @@ type Postgres struct {
 	DB *sql.DB
 }
 
+var postgressql Postgres
+
 func NewDB() (*Postgres, error) {
-	configApp, err := Config()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	configApp := Config()
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
 		configApp.DbHost, configApp.DbUser, configApp.DbPassword, configApp.DbName, configApp.DbPort, configApp.DbSslMode)
@@ -29,5 +27,10 @@ func NewDB() (*Postgres, error) {
 	db.SetMaxIdleConns(10)
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
 	db.SetMaxOpenConns(100)
-	return &Postgres{DB: db}, nil
+	postgressql.DB = db
+	return &postgressql, nil
+}
+
+func GetDB() *Postgres {
+	return &postgressql
 }

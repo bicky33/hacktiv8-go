@@ -23,21 +23,22 @@ const getSocialMedia = `-- name: GetSocialMedia :many
 SELECT 
     socialmedia.id, socialmedia.name, socialmedia.social_media_url, socialmedia.user_id, socialmedia.created_at, socialmedia.updated_at, 
     users.id, 
-    users.username
-    -- users.profile_image_url 
+    users.username,
+    users.profile_image_url 
 FROM SocialMedias as socialMedia 
 JOIN Users as users ON users.id = socialMedia.user_id
 `
 
 type GetSocialMediaRow struct {
-	ID             int32
-	Name           string
-	SocialMediaUrl string
-	UserID         int32
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	ID_2           int32
-	Username       string
+	ID              int32
+	Name            string
+	SocialMediaUrl  string
+	UserID          int32
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	ID_2            int32
+	Username        string
+	ProfileImageUrl string
 }
 
 func (q *Queries) GetSocialMedia(ctx context.Context) ([]GetSocialMediaRow, error) {
@@ -58,6 +59,7 @@ func (q *Queries) GetSocialMedia(ctx context.Context) ([]GetSocialMediaRow, erro
 			&i.UpdatedAt,
 			&i.ID_2,
 			&i.Username,
+			&i.ProfileImageUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -70,6 +72,24 @@ func (q *Queries) GetSocialMedia(ctx context.Context) ([]GetSocialMediaRow, erro
 		return nil, err
 	}
 	return items, nil
+}
+
+const getSocialMediaById = `-- name: GetSocialMediaById :one
+SELECT id, name, social_media_url, user_id, created_at, updated_at FROM SocialMedias WHERE id = $1
+`
+
+func (q *Queries) GetSocialMediaById(ctx context.Context, id int32) (Socialmedia, error) {
+	row := q.db.QueryRowContext(ctx, getSocialMediaById, id)
+	var i Socialmedia
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.SocialMediaUrl,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const insertSocialMedia = `-- name: InsertSocialMedia :one

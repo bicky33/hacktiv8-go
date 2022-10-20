@@ -3,6 +3,6 @@ CREATE TABLE SocialMedias (
     name VARCHAR(255) NOT NULL, 
     social_media_url text NOT NULL, 
     user_id INT REFERENCES Users (id) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+    created_at DATE DEFAULt NOW()::date NOT NULL, 
+    updated_at DATE DEFAULt NOW()::date NOT NULL 
 );

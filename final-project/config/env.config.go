@@ -17,28 +17,24 @@ type ConfigApp struct {
 
 	AppPort int `mapstructure:"APP_PORT"`
 
-	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
-	AccessTokenPublicKey   string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY"`
-	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`
-	RefreshTokenPublicKey  string        `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY"`
-	AccessTokenExpiresIn   time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRED_IN"`
-	RefreshTokenExpiresIn  time.Duration `mapstructure:"REFRESH_TOKEN_EXPIRED_IN"`
-	AccessTokenMaxAge      int           `mapstructure:"ACCESS_TOKEN_MAXAGE"`
-	RefreshTokenMaxAge     int           `mapstructure:"REFRESH_TOKEN_MAXAGE"`
+	AccessTokenPrivateKey string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
+	AccessTokenPublicKey  string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY"`
+	AccessTokenExpiresIn  time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRED_IN"`
+	AccessTokenMaxAge     int           `mapstructure:"ACCESS_TOKEN_MAXAGE"`
 }
 
-func Config() (config ConfigApp, err error) {
+func Config() (config ConfigApp) {
 	vp := viper.New()
 	vp.AddConfigPath(".")
 	vp.SetConfigType("env")
 	vp.SetConfigName(".env")
 	vp.AutomaticEnv()
 
-	if err = vp.ReadInConfig(); err != nil {
+	if err := vp.ReadInConfig(); err != nil {
 		log.Fatalf("Read error %v", err)
 	}
-	err = vp.Unmarshal(&config)
-	if err != nil {
+
+	if err := vp.Unmarshal(&config); err != nil {
 		log.Fatalln("unable to unmarshall the config ", err)
 	}
 	return

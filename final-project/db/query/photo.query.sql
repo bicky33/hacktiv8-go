@@ -10,8 +10,11 @@ SELECT
 FROM Photos as photos 
 JOIN Users as users ON photos.user_id = users.id;
 
+-- name: GetPhotoById :one
+SELECT * FROM Photos WHERE id = $1;
+
 -- name: UpdatePhoto :one
-UPDATE Photos SET title = $1, caption = $2, photo_url = $3, updated_at = NOW() 
+UPDATE Photos SET title = $1, caption = $2, photo_url = $3, updated_at = NOW() WHERE id = $4
 RETURNING id, title, caption, photo_url, user_id, updated_at;
 
 -- name: DeletePhoto :exec 

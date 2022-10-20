@@ -31,7 +31,7 @@ SELECT
     photos.photo_url, 
     photos.user_id 
 FROM Comments as comments 
-JOIN Users as users ON users.user_id = comments.user_id 
+JOIN Users as users ON users.id = comments.user_id 
 JOIN Photos as photos ON photos.id = comments.photo_id
 `
 
@@ -88,6 +88,24 @@ func (q *Queries) GetComment(ctx context.Context) ([]GetCommentRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getCommentById = `-- name: GetCommentById :one
+SELECT id, user_id, photo_id, message, created_at, updated_at FROM Comments WHERE id = $1
+`
+
+func (q *Queries) GetCommentById(ctx context.Context, id int32) (Comment, error) {
+	row := q.db.QueryRowContext(ctx, getCommentById, id)
+	var i Comment
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.PhotoID,
+		&i.Message,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const insertComment = `-- name: InsertComment :one

@@ -6,10 +6,13 @@ RETURNING id, name, social_media_url, user_id, created_at;
 SELECT 
     socialMedia.*, 
     users.id, 
-    users.username
-    -- users.profile_image_url 
+    users.username,
+    users.profile_image_url 
 FROM SocialMedias as socialMedia 
 JOIN Users as users ON users.id = socialMedia.user_id;
+
+-- name: GetSocialMediaById :one
+SELECT * FROM SocialMedias WHERE id = $1;
 
 -- name: UpdateSocialMedia :one 
 UPDATE SocialMedias SET name = $1, social_media_url = $2, updated_at = NOW() 

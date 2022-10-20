@@ -41,18 +41,39 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
-const getUserEmail = `-- name: GetUserEmail :one
-SELECT id, username, email, password, age, created_at, updated_at FROM Users WHERE email = $1
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, email, password, profile_image_url, age, created_at, updated_at FROM Users WHERE email = $1
 `
 
-func (q *Queries) GetUserEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserEmail, email)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.Email,
 		&i.Password,
+		&i.ProfileImageUrl,
+		&i.Age,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserById = `-- name: GetUserById :one
+SELECT id, username, email, password, profile_image_url, age, created_at, updated_at FROM Users WHERE id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.ProfileImageUrl,
 		&i.Age,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -61,15 +82,16 @@ func (q *Queries) GetUserEmail(ctx context.Context, email string) (User, error) 
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO Users (username, email, password, age) VALUES ($1, $2, $3, $4) 
+INSERT INTO Users (username, email, password, age, profile_image_url) VALUES ($1, $2, $3, $4, $5) 
 RETURNING id, username, email, age
 `
 
 type InsertUserParams struct {
-	Username string
-	Email    string
-	Password string
-	Age      int32
+	Username        string
+	Email           string
+	Password        string
+	Age             int32
+	ProfileImageUrl string
 }
 
 type InsertUserRow struct {
@@ -85,6 +107,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.Email,
 		arg.Password,
 		arg.Age,
+		arg.ProfileImageUrl,
 	)
 	var i InsertUserRow
 	err := row.Scan(
@@ -97,7 +120,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 }
 
 const updateUser = `-- name: UpdateUser :one
-UPDATE Users SET email = $1, username = $2, updated_at = NOW() WHERE id = $3 
+UPDATE Users SET email = $1, username = $2, updated_at = NOW()::date WHERE id = $3 
 RETURNING id, username, email, age, updated_at
 `
 

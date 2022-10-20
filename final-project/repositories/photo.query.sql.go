@@ -19,6 +19,25 @@ func (q *Queries) DeletePhoto(ctx context.Context, id int32) error {
 	return err
 }
 
+const getPhotoById = `-- name: GetPhotoById :one
+SELECT id, title, caption, photo_url, user_id, created_at, updated_at FROM Photos WHERE id = $1
+`
+
+func (q *Queries) GetPhotoById(ctx context.Context, id int32) (Photo, error) {
+	row := q.db.QueryRowContext(ctx, getPhotoById, id)
+	var i Photo
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Caption,
+		&i.PhotoUrl,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getUserPhoto = `-- name: GetUserPhoto :many
 SELECT 
     photos.id, photos.title, photos.caption, photos.photo_url, photos.user_id, photos.created_at, photos.updated_at, 
@@ -114,7 +133,7 @@ func (q *Queries) InsertPhoto(ctx context.Context, arg InsertPhotoParams) (Inser
 }
 
 const updatePhoto = `-- name: UpdatePhoto :one
-UPDATE Photos SET title = $1, caption = $2, photo_url = $3, updated_at = NOW() 
+UPDATE Photos SET title = $1, caption = $2, photo_url = $3, updated_at = NOW() WHERE id = $4
 RETURNING id, title, caption, photo_url, user_id, updated_at
 `
 
@@ -122,6 +141,7 @@ type UpdatePhotoParams struct {
 	Title    string
 	Caption  string
 	PhotoUrl string
+	ID       int32
 }
 
 type UpdatePhotoRow struct {
@@ -134,7 +154,12 @@ type UpdatePhotoRow struct {
 }
 
 func (q *Queries) UpdatePhoto(ctx context.Context, arg UpdatePhotoParams) (UpdatePhotoRow, error) {
-	row := q.db.QueryRowContext(ctx, updatePhoto, arg.Title, arg.Caption, arg.PhotoUrl)
+	row := q.db.QueryRowContext(ctx, updatePhoto,
+		arg.Title,
+		arg.Caption,
+		arg.PhotoUrl,
+		arg.ID,
+	)
 	var i UpdatePhotoRow
 	err := row.Scan(
 		&i.ID,

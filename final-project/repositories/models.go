@@ -37,11 +37,12 @@ type Socialmedia struct {
 }
 
 type User struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	Age       int32
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID              int32
+	Username        string
+	Email           string
+	Password        string
+	ProfileImageUrl string
+	Age             int32
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }

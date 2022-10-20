@@ -14,8 +14,11 @@ SELECT
     photos.photo_url, 
     photos.user_id 
 FROM Comments as comments 
-JOIN Users as users ON users.user_id = comments.user_id 
+JOIN Users as users ON users.id = comments.user_id 
 JOIN Photos as photos ON photos.id = comments.photo_id;
+
+-- name: GetCommentById :one
+SELECT * FROM Comments WHERE id = $1;
 
 -- name: UpdateComment :one
 UPDATE Comments SET message = $1, updated_at = NOW() 

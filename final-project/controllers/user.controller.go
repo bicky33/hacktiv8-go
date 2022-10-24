@@ -34,7 +34,10 @@ func (controller *UserController) Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	response := dto.UserResponse{Code: fiber.StatusCreated, Message: "succes create data", Status: "Created", Data: data}
+	response := dto.UserResponse{
+		Status: fiber.StatusCreated,
+		Data:   data,
+	}
 	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
@@ -73,34 +76,42 @@ func (controller *UserController) Login(c *fiber.Ctx) error {
 		},
 	)
 
-	response := dto.UserResponse{Code: fiber.StatusOK, Status: "Ok", Message: "Success create token", Data: fiber.Map{"token": token}}
+	response := dto.UserResponse{
+		Status: fiber.StatusOK,
+		Data:   fiber.Map{"token": token},
+	}
 
 	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 func (controller *UserController) Update(c *fiber.Ctx) error {
 	var payload dto.UserUpdateRequest
-	userId, _ := c.ParamsInt("userId")
+	getUser := c.Locals("current_user").(*helper.JWTClaim)
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	payload.ID = int32(userId)
 	if err := controller.Validate.Struct(payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"errors": validate.TranslateError(err)})
 	}
-	result, err := controller.Service.Update(c.Context(), payload)
+	result, err := controller.Service.Update(c.Context(), payload, getUser.ID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	response := dto.UserResponse{Code: fiber.StatusOK, Status: "Ok", Message: "Success update data", Data: result}
+	response := dto.UserResponse{
+		Status: fiber.StatusOK,
+		Data:   result,
+	}
 	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 func (controller *UserController) Delete(c *fiber.Ctx) error {
-	userId, _ := c.ParamsInt("userId")
-	if err := controller.Service.Delete(c.Context(), int32(userId)); err != nil {
+	getUser := c.Locals("current_user").(*helper.JWTClaim)
+	if err := controller.Service.Delete(c.Context(), uint32(getUser.ID)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	response := dto.UserResponse{Code: fiber.StatusOK, Status: "Ok", Message: "Your account has been successfuly deleted"}
+	response := dto.UserResponse{
+		Status:  fiber.StatusOK,
+		Message: "Your account has been successfuly deleted",
+	}
 	return c.Status(fiber.StatusOK).JSON(response)
 }

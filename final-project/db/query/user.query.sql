@@ -1,5 +1,5 @@
 -- name: InsertUser :one
-INSERT INTO Users (username, email, password, age, profile_image_url) VALUES ($1, $2, $3, $4, $5) 
+INSERT INTO Users (username, email, password, age) VALUES ($1, $2, $3, $4) 
 RETURNING id, username, email, age ;
 
 -- name: GetUserByEmail :one 

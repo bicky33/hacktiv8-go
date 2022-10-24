@@ -6,8 +6,7 @@ RETURNING id, name, social_media_url, user_id, created_at;
 SELECT 
     socialMedia.*, 
     users.id, 
-    users.username,
-    users.profile_image_url 
+    users.username
 FROM SocialMedias as socialMedia 
 JOIN Users as users ON users.id = socialMedia.user_id;
 

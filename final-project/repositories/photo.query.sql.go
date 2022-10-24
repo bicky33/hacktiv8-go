@@ -14,7 +14,7 @@ const deletePhoto = `-- name: DeletePhoto :exec
 DELETE FROM Photos WHERE id = $1
 `
 
-func (q *Queries) DeletePhoto(ctx context.Context, id int32) error {
+func (q *Queries) DeletePhoto(ctx context.Context, id uint32) error {
 	_, err := q.db.ExecContext(ctx, deletePhoto, id)
 	return err
 }
@@ -23,7 +23,7 @@ const getPhotoById = `-- name: GetPhotoById :one
 SELECT id, title, caption, photo_url, user_id, created_at, updated_at FROM Photos WHERE id = $1
 `
 
-func (q *Queries) GetPhotoById(ctx context.Context, id int32) (Photo, error) {
+func (q *Queries) GetPhotoById(ctx context.Context, id uint32) (Photo, error) {
 	row := q.db.QueryRowContext(ctx, getPhotoById, id)
 	var i Photo
 	err := row.Scan(
@@ -48,11 +48,11 @@ JOIN Users as users ON photos.user_id = users.id
 `
 
 type GetUserPhotoRow struct {
-	ID        int32
+	ID        uint32
 	Title     string
 	Caption   string
 	PhotoUrl  string
-	UserID    int32
+	UserID    uint32
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Email     string
@@ -101,15 +101,15 @@ type InsertPhotoParams struct {
 	Title    string
 	Caption  string
 	PhotoUrl string
-	UserID   int32
+	UserID   uint32
 }
 
 type InsertPhotoRow struct {
-	ID        int32
+	ID        uint32
 	Title     string
 	Caption   string
 	PhotoUrl  string
-	UserID    int32
+	UserID    uint32
 	CreatedAt time.Time
 }
 
@@ -141,15 +141,15 @@ type UpdatePhotoParams struct {
 	Title    string
 	Caption  string
 	PhotoUrl string
-	ID       int32
+	ID       uint32
 }
 
 type UpdatePhotoRow struct {
-	ID        int32
+	ID        uint32
 	Title     string
 	Caption   string
 	PhotoUrl  string
-	UserID    int32
+	UserID    uint32
 	UpdatedAt time.Time
 }
 

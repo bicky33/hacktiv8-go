@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"final-project/dto"
+	"final-project/helper"
 	"final-project/repositories"
 	"fmt"
 
@@ -10,10 +11,10 @@ import (
 )
 
 type SocialMedia interface {
-	Create(ctx *fasthttp.RequestCtx, payload dto.SocialMediaCreateRequest, userId int32) (*dto.SocialMediaCreateResponse, error)
+	Create(ctx *fasthttp.RequestCtx, payload dto.SocialMediaCreateRequest, userId uint32) (*dto.SocialMediaCreateResponse, error)
 	GetAll(*fasthttp.RequestCtx) (*[]dto.SocialMediaGetResponse, error)
-	Update(*fasthttp.RequestCtx, dto.SocialMediaCreateRequest, int32) (*dto.SocialMediaUpdateResponse, error)
-	Delete(*fasthttp.RequestCtx, int32) error
+	Update(*fasthttp.RequestCtx, dto.SocialMediaCreateRequest, uint32) (*dto.SocialMediaUpdateResponse, error)
+	Delete(*fasthttp.RequestCtx, uint32) error
 }
 
 type SocialMediaImpl struct {
@@ -24,7 +25,7 @@ func NewSocialMedia(DB *repositories.Queries) SocialMedia {
 	return &SocialMediaImpl{DB: DB}
 }
 
-func (service *SocialMediaImpl) Create(ctx *fasthttp.RequestCtx, payload dto.SocialMediaCreateRequest, userId int32) (*dto.SocialMediaCreateResponse, error) {
+func (service *SocialMediaImpl) Create(ctx *fasthttp.RequestCtx, payload dto.SocialMediaCreateRequest, userId uint32) (*dto.SocialMediaCreateResponse, error) {
 	data := repositories.InsertSocialMediaParams{
 		Name:           payload.Name,
 		SocialMediaUrl: payload.SocialMediaUrl,
@@ -53,9 +54,8 @@ func (service *SocialMediaImpl) GetAll(ctx *fasthttp.RequestCtx) (*[]dto.SocialM
 	var responseData []dto.SocialMediaGetResponse
 	for _, v := range result {
 		user := dto.UserUpdateRequest{
-			ID:              v.ID_2,
-			Username:        v.Username,
-			ProfileImageUrl: v.ProfileImageUrl,
+			ID:       v.ID_2,
+			Username: v.Username,
 		}
 		createdAt := fmt.Sprintf("%d-%d-%d", v.CreatedAt.Year(), int(v.CreatedAt.Month()), v.CreatedAt.Day())
 		updatedAt := fmt.Sprintf("%d-%d-%d", v.UpdatedAt.Year(), int(v.UpdatedAt.Month()), v.UpdatedAt.Day())
@@ -73,7 +73,7 @@ func (service *SocialMediaImpl) GetAll(ctx *fasthttp.RequestCtx) (*[]dto.SocialM
 	return &responseData, nil
 }
 
-func (service *SocialMediaImpl) Update(ctx *fasthttp.RequestCtx, payload dto.SocialMediaCreateRequest, socialMediaId int32) (*dto.SocialMediaUpdateResponse, error) {
+func (service *SocialMediaImpl) Update(ctx *fasthttp.RequestCtx, payload dto.SocialMediaCreateRequest, socialMediaId uint32) (*dto.SocialMediaUpdateResponse, error) {
 	data := repositories.UpdateSocialMediaParams{
 		Name:           payload.Name,
 		SocialMediaUrl: payload.SocialMediaUrl,
@@ -94,10 +94,10 @@ func (service *SocialMediaImpl) Update(ctx *fasthttp.RequestCtx, payload dto.Soc
 	return &responseData, nil
 }
 
-func (service *SocialMediaImpl) Delete(ctx *fasthttp.RequestCtx, socialMediaId int32) error {
+func (service *SocialMediaImpl) Delete(ctx *fasthttp.RequestCtx, socialMediaId uint32) error {
 	err := service.DB.DeleteSocialMedia(ctx, socialMediaId)
 	if err != nil {
-		return errors.New("data not found")
+		return errors.New(helper.MessageDataNotFountError)
 	}
 	return nil
 }

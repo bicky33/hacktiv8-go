@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"final-project/dto"
+	"final-project/helper"
 	"final-project/repositories"
 	"fmt"
 
@@ -10,10 +11,10 @@ import (
 )
 
 type CommentService interface {
-	Create(*fasthttp.RequestCtx, dto.CommentCreateRequest, int32) (*dto.CommentCreateResponse, error)
+	Create(*fasthttp.RequestCtx, dto.CommentCreateRequest, uint32) (*dto.CommentCreateResponse, error)
 	GetAll(*fasthttp.RequestCtx) (*[]dto.GetCommentResponse, error)
-	Update(*fasthttp.RequestCtx, dto.CommentUpdateRequest, int32) (*dto.CommentUpdateResponse, error)
-	Delete(*fasthttp.RequestCtx, int32) error
+	Update(*fasthttp.RequestCtx, dto.CommentUpdateRequest, uint32) (*dto.CommentUpdateResponse, error)
+	Delete(*fasthttp.RequestCtx, uint32) error
 }
 
 type CommentServiceImpl struct {
@@ -24,7 +25,7 @@ func NewCommentService(DB *repositories.Queries) CommentService {
 	return &CommentServiceImpl{DB: DB}
 }
 
-func (service *CommentServiceImpl) Create(ctx *fasthttp.RequestCtx, payload dto.CommentCreateRequest, userId int32) (*dto.CommentCreateResponse, error) {
+func (service *CommentServiceImpl) Create(ctx *fasthttp.RequestCtx, payload dto.CommentCreateRequest, userId uint32) (*dto.CommentCreateResponse, error) {
 	data := repositories.InsertCommentParams{
 		Message: payload.Message,
 		PhotoID: payload.PhotoId,
@@ -81,7 +82,7 @@ func (service *CommentServiceImpl) GetAll(ctx *fasthttp.RequestCtx) (*[]dto.GetC
 	return &responseData, nil
 }
 
-func (service *CommentServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.CommentUpdateRequest, commentId int32) (*dto.CommentUpdateResponse, error) {
+func (service *CommentServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.CommentUpdateRequest, commentId uint32) (*dto.CommentUpdateResponse, error) {
 	data := repositories.UpdateCommentParams{
 		Message: payload.Message,
 		ID:      commentId,
@@ -102,10 +103,10 @@ func (service *CommentServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.
 	return &responseData, nil
 }
 
-func (service *CommentServiceImpl) Delete(ctx *fasthttp.RequestCtx, commentId int32) error {
+func (service *CommentServiceImpl) Delete(ctx *fasthttp.RequestCtx, commentId uint32) error {
 	err := service.DB.DeleteComment(ctx, commentId)
 	if err != nil {
-		return errors.New("data not found")
+		return errors.New(helper.MessageDataNotFountError)
 	}
 	return nil
 }

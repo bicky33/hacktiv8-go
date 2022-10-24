@@ -9,40 +9,39 @@ import (
 )
 
 type Comment struct {
-	ID        int32
-	UserID    int32
-	PhotoID   int32
+	ID        uint32
+	UserID    uint32
+	PhotoID   uint32
 	Message   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type Photo struct {
-	ID        int32
+	ID        uint32
 	Title     string
 	Caption   string
 	PhotoUrl  string
-	UserID    int32
+	UserID    uint32
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type Socialmedia struct {
-	ID             int32
+	ID             uint32
 	Name           string
 	SocialMediaUrl string
-	UserID         int32
+	UserID         uint32
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
 
 type User struct {
-	ID              int32
-	Username        string
-	Email           string
-	Password        string
-	ProfileImageUrl string
-	Age             int32
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	ID        uint32
+	Username  string
+	Email     string
+	Password  string
+	Age       uint32
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

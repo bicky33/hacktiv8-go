@@ -1,9 +1,8 @@
 package dto
 
 type SocialMediaResponse struct {
-	Code    int32       `json:"code"`
-	Status  string      `json:"status"`
-	Message string      `json:"message"`
+	Status  uint32      `json:"status"`
+	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
@@ -13,27 +12,27 @@ type SocialMediaCreateRequest struct {
 }
 
 type SocialMediaCreateResponse struct {
-	ID             int32  `json:"id"`
+	ID             uint32 `json:"id"`
 	Name           string `json:"name"`
 	SocialMediaUrl string `json:"social_media_url"`
-	UserID         int32  `json:"user_id"`
+	UserID         uint32 `json:"user_id"`
 	CreatedAt      string `json:"created_at"`
 }
 
 type SocialMediaGetResponse struct {
-	ID             int32             `json:"id"`
+	ID             uint32            `json:"id"`
 	Name           string            `json:"name"`
 	SocialMediaUrl string            `json:"social_media_url"`
-	UserID         int32             `json:"user_id"`
+	UserID         uint32            `json:"user_id"`
 	CreatedAt      string            `json:"created_at"`
 	UpdatedAt      string            `json:"updated_at"`
 	User           UserUpdateRequest `json:"User"`
 }
 
 type SocialMediaUpdateResponse struct {
-	ID             int32  `json:"id"`
+	ID             uint32 `json:"id"`
 	Name           string `json:"name"`
 	SocialMediaUrl string `json:"social_media_url"`
-	UserID         int32  `json:"user_id"`
+	UserID         uint32 `json:"user_id"`
 	UpdatedAt      string `json:"updated_at"`
 }

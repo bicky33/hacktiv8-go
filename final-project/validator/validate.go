@@ -42,8 +42,6 @@ func TranslateError(err error) map[string][]string {
 	validatorErrs := err.(validator.ValidationErrors)
 	for _, e := range validatorErrs {
 		translatedErr := fmt.Errorf(e.Translate(Trans))
-		fmt.Println(e.StructField())
-		fmt.Println(e.Field())
 		errs[e.Field()] = append(errs[e.Field()], translatedErr.Error())
 	}
 	return errs

@@ -12,16 +12,16 @@ func Authentication() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		authorizationHeader := c.Get("Authorization")
 		if authorizationHeader == "" {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "need Authorization Header"})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": helper.MessageAuthorizedHeaderError})
 		}
 		if !strings.Contains(authorizationHeader, "Bearer") {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid Token"})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": helper.MessageInvalidFormatHeaderError})
 		}
 		config := config.Config()
 		tokenString := strings.Replace(authorizationHeader, "Bearer ", "", -1)
 		data, err := helper.ValidateToken(tokenString, config.AccessTokenPublicKey)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Token Expired"})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 		c.Locals("current_user", data)
 		c.Next()

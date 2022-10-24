@@ -14,7 +14,7 @@ const deleteComment = `-- name: DeleteComment :exec
 DELETE FROM Comments WHERE id = $1
 `
 
-func (q *Queries) DeleteComment(ctx context.Context, id int32) error {
+func (q *Queries) DeleteComment(ctx context.Context, id uint32) error {
 	_, err := q.db.ExecContext(ctx, deleteComment, id)
 	return err
 }
@@ -36,20 +36,20 @@ JOIN Photos as photos ON photos.id = comments.photo_id
 `
 
 type GetCommentRow struct {
-	ID        int32
-	UserID    int32
-	PhotoID   int32
+	ID        uint32
+	UserID    uint32
+	PhotoID   uint32
 	Message   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	ID_2      int32
+	ID_2      uint32
 	Email     string
 	Username  string
-	ID_3      int32
+	ID_3      uint32
 	Title     string
 	Caption   string
 	PhotoUrl  string
-	UserID_2  int32
+	UserID_2  uint32
 }
 
 func (q *Queries) GetComment(ctx context.Context) ([]GetCommentRow, error) {
@@ -94,7 +94,7 @@ const getCommentById = `-- name: GetCommentById :one
 SELECT id, user_id, photo_id, message, created_at, updated_at FROM Comments WHERE id = $1
 `
 
-func (q *Queries) GetCommentById(ctx context.Context, id int32) (Comment, error) {
+func (q *Queries) GetCommentById(ctx context.Context, id uint32) (Comment, error) {
 	row := q.db.QueryRowContext(ctx, getCommentById, id)
 	var i Comment
 	err := row.Scan(
@@ -115,15 +115,15 @@ RETURNING id, message, photo_id, user_id, created_at
 
 type InsertCommentParams struct {
 	Message string
-	UserID  int32
-	PhotoID int32
+	UserID  uint32
+	PhotoID uint32
 }
 
 type InsertCommentRow struct {
-	ID        int32
+	ID        uint32
 	Message   string
-	PhotoID   int32
-	UserID    int32
+	PhotoID   uint32
+	UserID    uint32
 	CreatedAt time.Time
 }
 
@@ -148,14 +148,14 @@ RETURNING id, message, photo_id, user_id, updated_at
 
 type UpdateCommentParams struct {
 	Message string
-	ID      int32
+	ID      uint32
 }
 
 type UpdateCommentRow struct {
-	ID        int32
+	ID        uint32
 	Message   string
-	PhotoID   int32
-	UserID    int32
+	PhotoID   uint32
+	UserID    uint32
 	UpdatedAt time.Time
 }
 

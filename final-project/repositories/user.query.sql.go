@@ -36,13 +36,13 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM Users WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+func (q *Queries) DeleteUser(ctx context.Context, id uint32) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, email, password, profile_image_url, age, created_at, updated_at FROM Users WHERE email = $1
+SELECT id, username, email, password, age, created_at, updated_at FROM Users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -53,7 +53,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Username,
 		&i.Email,
 		&i.Password,
-		&i.ProfileImageUrl,
 		&i.Age,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -62,10 +61,10 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, email, password, profile_image_url, age, created_at, updated_at FROM Users WHERE id = $1
+SELECT id, username, email, password, age, created_at, updated_at FROM Users WHERE id = $1
 `
 
-func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+func (q *Queries) GetUserById(ctx context.Context, id uint32) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
@@ -73,7 +72,6 @@ func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
 		&i.Username,
 		&i.Email,
 		&i.Password,
-		&i.ProfileImageUrl,
 		&i.Age,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -82,23 +80,22 @@ func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO Users (username, email, password, age, profile_image_url) VALUES ($1, $2, $3, $4, $5) 
+INSERT INTO Users (username, email, password, age) VALUES ($1, $2, $3, $4) 
 RETURNING id, username, email, age
 `
 
 type InsertUserParams struct {
-	Username        string
-	Email           string
-	Password        string
-	Age             int32
-	ProfileImageUrl string
+	Username string
+	Email    string
+	Password string
+	Age      uint32
 }
 
 type InsertUserRow struct {
-	ID       int32
+	ID       uint32
 	Username string
 	Email    string
-	Age      int32
+	Age      uint32
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error) {
@@ -107,7 +104,6 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (InsertU
 		arg.Email,
 		arg.Password,
 		arg.Age,
-		arg.ProfileImageUrl,
 	)
 	var i InsertUserRow
 	err := row.Scan(
@@ -127,14 +123,14 @@ RETURNING id, username, email, age, updated_at
 type UpdateUserParams struct {
 	Email    string
 	Username string
-	ID       int32
+	ID       uint32
 }
 
 type UpdateUserRow struct {
-	ID        int32
+	ID        uint32
 	Username  string
 	Email     string
-	Age       int32
+	Age       uint32
 	UpdatedAt time.Time
 }
 

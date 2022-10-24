@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"final-project/dto"
+	"final-project/helper"
 	"final-project/repositories"
 	"fmt"
 
@@ -10,10 +11,10 @@ import (
 )
 
 type PhotoService interface {
-	Create(*fasthttp.RequestCtx, dto.PhotoCreateRequest, int32) (*dto.PhotoCreateResponse, error)
+	Create(*fasthttp.RequestCtx, dto.PhotoCreateRequest, uint32) (*dto.PhotoCreateResponse, error)
 	GetAll(*fasthttp.RequestCtx) (*[]dto.PhotoGetResponse, error)
-	Update(*fasthttp.RequestCtx, dto.PhotoCreateRequest, int32) (*dto.PhotoUpdateResponse, error)
-	Delete(*fasthttp.RequestCtx, int32) error
+	Update(*fasthttp.RequestCtx, dto.PhotoCreateRequest, uint32) (*dto.PhotoUpdateResponse, error)
+	Delete(*fasthttp.RequestCtx, uint32) error
 }
 
 type PhotoServiceImpl struct {
@@ -24,7 +25,7 @@ func NewPhotoService(DB *repositories.Queries) PhotoService {
 	return &PhotoServiceImpl{DB: DB}
 }
 
-func (service *PhotoServiceImpl) Create(ctx *fasthttp.RequestCtx, payload dto.PhotoCreateRequest, userId int32) (*dto.PhotoCreateResponse, error) {
+func (service *PhotoServiceImpl) Create(ctx *fasthttp.RequestCtx, payload dto.PhotoCreateRequest, userId uint32) (*dto.PhotoCreateResponse, error) {
 	data := repositories.InsertPhotoParams{
 		Title:    payload.Title,
 		Caption:  payload.Caption,
@@ -76,7 +77,7 @@ func (service *PhotoServiceImpl) GetAll(ctx *fasthttp.RequestCtx) (*[]dto.PhotoG
 	return &responseData, nil
 }
 
-func (service *PhotoServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.PhotoCreateRequest, photoId int32) (*dto.PhotoUpdateResponse, error) {
+func (service *PhotoServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.PhotoCreateRequest, photoId uint32) (*dto.PhotoUpdateResponse, error) {
 	data := repositories.UpdatePhotoParams{
 		Title:    payload.Title,
 		Caption:  payload.Caption,
@@ -85,7 +86,7 @@ func (service *PhotoServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.Ph
 	}
 	result, err := service.DB.UpdatePhoto(ctx, data)
 	if err != nil {
-		return nil, errors.New("data not found")
+		return nil, errors.New(helper.MessageDataNotFountError)
 	}
 	updatedAt := fmt.Sprintf("%d-%d-%d", result.UpdatedAt.Year(), int(result.UpdatedAt.Month()), result.UpdatedAt.Day())
 	responseData := dto.PhotoUpdateResponse{
@@ -99,10 +100,10 @@ func (service *PhotoServiceImpl) Update(ctx *fasthttp.RequestCtx, payload dto.Ph
 	return &responseData, nil
 }
 
-func (service *PhotoServiceImpl) Delete(ctx *fasthttp.RequestCtx, photoId int32) error {
+func (service *PhotoServiceImpl) Delete(ctx *fasthttp.RequestCtx, photoId uint32) error {
 	err := service.DB.DeletePhoto(ctx, photoId)
 	if err != nil {
-		return errors.New("data not found")
+		return errors.New(helper.MessageDataNotFountError)
 	}
 	return nil
 }

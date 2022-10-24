@@ -23,16 +23,16 @@ func Router(app *fiber.App, db *config.Postgres) {
 	commentService := services.NewCommentService(repositories)
 	commentController := controllers.CommentController{Service: commentService, Validate: validator.Validate}
 	// Social Media Service
-	socialMediaService := services.NewCommentService(repositories)
-	socialMediaController := controllers.CommentController{Service: socialMediaService, Validate: validator.Validate}
+	socialMediaService := services.NewSocialMedia(repositories)
+	socialMediaController := controllers.SocialMediaController{Service: socialMediaService, Validate: validator.Validate}
 
 	// Auth
 	app.Post("/users/login", userController.Login)
 	app.Post("/users/register", userController.Register)
 	// user Router
 	userRoute := app.Group("/users", middleware.Authentication())
-	userRoute.Put("/:userId", middleware.UserAuthorization(), userController.Update)
-	userRoute.Delete("/:userId", middleware.UserAuthorization(), userController.Delete)
+	userRoute.Put("/", userController.Update)
+	userRoute.Delete("/", userController.Delete)
 	// photo Route
 	photoRoute := app.Group("/photos", middleware.Authentication())
 	photoRoute.Post("/", photoController.Create)

@@ -31,7 +31,10 @@ func (controller *CommentController) Create(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	response := dto.CommentResponse{Code: fiber.StatusCreated, Message: "succes create data", Status: "Created", Data: result}
+	response := dto.CommentResponse{
+		Status: fiber.StatusCreated,
+		Data:   result,
+	}
 	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
@@ -42,10 +45,8 @@ func (controller *CommentController) GetAll(c *fiber.Ctx) error {
 	}
 
 	response := dto.CommentResponse{
-		Code:    fiber.StatusOK,
-		Status:  "Ok",
-		Message: "success get data",
-		Data:    result,
+		Status: fiber.StatusOK,
+		Data:   result,
 	}
 
 	return c.Status(fiber.StatusOK).JSON(response)
@@ -63,25 +64,25 @@ func (controller *CommentController) Update(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(validate.TranslateError(err))
 	}
 
-	result, err := controller.Service.Update(c.Context(), payload, int32(commentId))
+	result, err := controller.Service.Update(c.Context(), payload, uint32(commentId))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	response := dto.CommentResponse{
-		Code:    fiber.StatusOK,
-		Status:  "Ok",
-		Message: "success update data",
-		Data:    result,
+		Status: fiber.StatusOK,
+		Data:   result,
 	}
 	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 func (controller *CommentController) Delete(c *fiber.Ctx) error {
 	commentId, _ := c.ParamsInt("commentId")
-	if err := controller.Service.Delete(c.Context(), int32(commentId)); err != nil {
+	if err := controller.Service.Delete(c.Context(), uint32(commentId)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	response := dto.UserResponse{Code: fiber.StatusOK, Status: "Ok", Message: "Your comment has been successfuly deleted"}
+	response := dto.UserResponse{
+		Status:  fiber.StatusOK,
+		Message: "Your comment has been successfuly deleted"}
 	return c.Status(fiber.StatusOK).JSON(response)
 }
